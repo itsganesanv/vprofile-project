@@ -1,10 +1,13 @@
+def COLOR_MAP = [
+    'SUCCESS': 'good', 
+    'FAILURE': 'danger',
+]
 pipeline {
     agent any
     tools {
         maven "MAVEN3.9"
         jdk "JDK17"
-    }
-    
+    }   
     environment {
         SNAP_REPO = 'vprofile-snapshot'
 		NEXUS_USER = 'ganeadminsanv'
@@ -18,8 +21,6 @@ pipeline {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
     }
-    
-
     stages {
         stage('Build'){
             steps {
@@ -32,7 +33,6 @@ pipeline {
                 }
             }
         }
-
         stage('Test'){
             steps {
                 sh 'mvn -s settings.xml test'
@@ -44,7 +44,6 @@ pipeline {
                 sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
         }
-
         stage('Sonar Analysis') {
             environment {
                 scannerHome = tool "${SONARSCANNER}"
@@ -62,7 +61,6 @@ pipeline {
               }
             }
         }
-
         stage("Quality Gate") {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
@@ -90,6 +88,14 @@ pipeline {
                   ]
                 )  
             }
+        }
+    }
+    post {
+        always {
+            echo 'Slack Notifications.'
+            slackSend channel: '#jenkinscicd',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
         }
     }
 }
