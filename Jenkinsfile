@@ -8,7 +8,7 @@ pipeline {
     environment {
         SNAP_REPO = 'vprofile-snapshot'
 		NEXUS_USER = 'ganesanv'
-		NEXUS_PASS = 'pEZ<7c/fx5    '
+		NEXUS_PASS = 'pEZ<7c/fx5'
 		RELEASE_REPO = 'vprofile-release'
 		CENTRAL_REPO = 'vpro-maven-central'
 		NEXUSIP = '192.168.1.5'
@@ -18,6 +18,7 @@ pipeline {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
     }
+    
 
     stages {
         stage('Build'){
